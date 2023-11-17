@@ -1,0 +1,21 @@
+apiVersion: osp-director.openstack.org/v1beta1
+kind: OpenStackBaremetalSet
+metadata:
+  name: compute 
+  namespace: openstack 
+spec: 
+  count: 1
+  # baseImageUrl: http://192.168.1.101/images/rhel-9.2-x86_64-kvm.qcow2
+  deploymentSSHSecret: osp-controlplane-ssh-keys
+  # # If you manually created an OpenStackProvisionServer, you can use it here,
+  # # otherwise director Operator will create one for you (with `baseImageUrl` as the image that it server)
+  # # to use with this OpenStackBaremetalSet
+  provisionServerName: openstack-provision-server
+  ctlplaneInterface: enp8s0
+  networks:
+    - ctlplane
+    - internal_api
+    - tenant
+    - storage
+  roleName: Compute
+  passwordSecret: userpassword 

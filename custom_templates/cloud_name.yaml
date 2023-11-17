@@ -1,0 +1,7 @@
+parameter_defaults:
+  CloudDomain: osptest.test.metalkube.org
+  CloudName: overcloud.osptest.test.metalkube.org
+  CloudNameInternal: overcloud.internalapi.osptest.test.metalkube.org
+  CloudNameStorage: overcloud.storage.osptest.test.metalkube.org
+  CloudNameStorageManagement: overcloud.storagemgmt.osptest.test.metalkube.org
+  CloudNameCtlplane: overcloud.ctlplane.osptest.test.metalkube.org

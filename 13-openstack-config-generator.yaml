@@ -1,0 +1,15 @@
+apiVersion: osp-director.openstack.org/v1beta1
+kind: OpenStackConfigGenerator
+metadata:
+  name: default 
+  namespace: openstack
+spec:
+  enableFencing: true 
+  gitSecret: git-secret 
+  imageURL: registry.redhat.io/rhosp-rhel8/openstack-tripleoclient:17.1
+  heatEnvConfigMap: heat-env-config 
+  # List of heat environment files to include from tripleo-heat-templates/environments
+  # heatEnvs: 
+  # - ssl/tls-endpoints-public-dns.yaml
+  # - ssl/enable-tls.yaml
+  tarballConfigMap: tripleo-tarball-config 

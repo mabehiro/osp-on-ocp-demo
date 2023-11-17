@@ -1,0 +1,41 @@
+apiVersion: osp-director.openstack.org/v1beta2
+kind: OpenStackControlPlane
+metadata:
+  name: overcloud
+  namespace: openstack
+spec:
+  openStackClientNetworks:
+    - ctlplane
+    - internal_api
+    - external
+  openStackClientStorageClass: ocs-storagecluster-ceph-rbd
+  passwordSecret: userpassword 
+  virtualMachineRoles:
+    Controller:
+      roleName: Controller
+      roleCount: 3
+      # ctlplaneInterface: enp11s0
+      networks:
+        - ctlplane
+        - internal_api
+        - external
+        - tenant
+        - storage
+        - storage_mgmt
+      cores: 6
+      memory: 12
+      rootDisk:
+        diskSize: 100
+        baseImageVolumeName: openstack-base-img
+        storageClass: ocs-storagecluster-ceph-rbd
+        storageAccessMode:  ReadWriteMany
+        storageVolumeMode: Block
+      # optional configure additional discs to be attached to the VMs,
+      # need to be configured manually inside the VMs where to be used.
+      additionalDisks:
+        - name: datadisk
+          diskSize: 100
+          storageClass: ocs-storagecluster-ceph-rbd
+          storageAccessMode:  ReadWriteMany
+          storageVolumeMode: Block
+  openStackRelease: "17.1"

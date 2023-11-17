@@ -1,0 +1,15 @@
+apiVersion: metal3.io/v1alpha1
+kind: Provisioning
+metadata:
+  name: provisioning-configuration
+spec:
+  preProvisioningOSDownloadURLs: {}
+  provisioningMacAddresses:
+  - 78:ac:44:05:d2:aa
+  - 78:AC:44:06:1A:EE
+  - 78:AC:44:05:B1:78
+  provisioningNetwork: Managed
+  provisioningNetworkCIDR: 172.15.0.0/24
+  provisioningDHCPRange: 172.15.0.240,172.15.0.253
+  provisioningIP: 172.15.0.254
+  provisioningInterface: eno2

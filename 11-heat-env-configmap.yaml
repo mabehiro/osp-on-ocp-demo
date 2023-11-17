@@ -1,0 +1,18 @@
+apiVersion: v1
+data:
+  cloud_name.yaml: |-
+    parameter_defaults:
+      CloudDomain: ocp4.example.com
+      CloudName: overcloud.ocp4.example.com
+      CloudNameInternal: overcloud.internalapi.ocp4.example.com
+      CloudNameStorage: overcloud.storage.ocp4.example.com
+      CloudNameStorageManagement: overcloud.storagemgmt.ocp4.example.com
+      CloudNameCtlplane: overcloud.ctlplane.ocp4.example.com
+  network_environment.yaml: |-
+    parameter_defaults:
+      ComputeNetworkConfigTemplate: 'single_nic_vlans.j2'
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: heat-env-config
+  namespace: openstack

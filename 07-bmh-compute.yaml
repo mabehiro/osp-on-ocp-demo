@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: openstack-compute-bmc-secret
+  namespace: openshift-machine-api
+type: Opaque
+data:
+  username: cm9vdAo=
+  password: R0BsYXh5KjEK
+
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: openstack-compute
+  namespace: openshift-machine-api
+spec:
+  online: false
+  bootMACAddress: 52:54:00:d9:25:9a
+  bmc:
+    # address: {{ ocp_ai_bmc_protocol|default('redfish+http') }}://{{ ocp_ai_bm_cidr_prefix }}.1:{{ ocp_ai_sushy_port | default('8082', true) }}/redfish/v1/Systems/{{ extra_worker_uuids.results[i].stdout }}
+    # bmcAddress: "idrac-virtualmedia+https://[fd18:1152:1b7d:3::2]/redfish/v1/Systems/System.Embedded.1"
+    address: "redfish+http://10.19.96.218:8000/redfish/v1/Systems/d9625231-9ede-4df3-a2f6-60577e7baf6c"
+    # address: "idrac-virtualmedia+https://10.19.96.215/redfish/v1/Systems/System.Embedded.1"
+    # address: "redfish-virtualmedia://fakefish-10-19-96-215-fakefish.apps.ocp.example.com/redfish/v1/Systems/1"
+    credentialsName: openstack-compute-bmc-secret
+    disableCertificateVerification: True
+  # bootMode: UEFI
+  rootDeviceHints:
+    deviceName: /dev/vda
