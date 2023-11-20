@@ -1,0 +1,10 @@
+apiVersion: v1
+binaryData:
+  custom-config.tar.gz: <To Be Filled>
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2023-11-16T02:37:14Z"
+  name: tripleo-tarball-config
+  namespace: openstack
+  resourceVersion: "10414680"
+  uid: 7f0fcd1f-6b6a-4568-9a65-7f215cff8f02
