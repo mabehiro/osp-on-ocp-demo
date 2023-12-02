@@ -1,7 +1,0 @@
-parameter_defaults:
-  CloudDomain: ocp4.example.com
-  CloudName: overcloud.ocp4.example.com
-  CloudNameInternal: overcloud.internalapi.ocp4.example.com
-  CloudNameStorage: overcloud.storage.ocp4.example.com
-  CloudNameStorageManagement: overcloud.storagemgmt.ocp4.example.com
-  CloudNameCtlplane: overcloud.ctlplane.ocp4.example.com

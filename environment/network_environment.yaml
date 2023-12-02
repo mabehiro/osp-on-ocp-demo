@@ -1,2 +1,0 @@
-parameter_defaults:
-  ComputeNetworkConfigTemplate: 'single_nic_vlans.j2'
