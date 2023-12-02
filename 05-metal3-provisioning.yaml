@@ -6,11 +6,11 @@ spec:
   preProvisioningOSDownloadURLs: {}
   provisioningMacAddresses:
   # ens7f0
-  - 40:A6:B7:3A:D4:C0
-  - 40:A6:B7:3A:D3:F0
-  - 40:A6:B7:39:35:70
+  - 3c:fd:fe:c1:6d:a1
+  - 40:a6:b7:3a:d4:c1
+  - 40:a6:b7:3a:d3:f1
   provisioningNetwork: Managed
   provisioningNetworkCIDR: 172.15.0.0/24
-  provisioningDHCPRange: 172.15.0.251,172.15.0.253
+  provisioningDHCPRange: 172.15.0.10,172.15.0.253
   provisioningIP: 172.15.0.254
-  provisioningInterface: ens7f0
+  provisioningInterface: ens7f1

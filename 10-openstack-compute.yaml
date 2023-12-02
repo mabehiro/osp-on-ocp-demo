@@ -11,7 +11,7 @@ spec:
   # # otherwise director Operator will create one for you (with `baseImageUrl` as the image that it server)
   # # to use with this OpenStackBaremetalSet
   provisionServerName: openstack-provision-server
-  ctlplaneInterface: enp8s0
+  ctlplaneInterface: enp1s0
   networks:
     - ctlplane
     - internal_api

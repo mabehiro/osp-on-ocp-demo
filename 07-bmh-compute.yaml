@@ -18,11 +18,11 @@ metadata:
 spec:
   online: false
   # ocp-compute, br-osp bridge interface
-  bootMACAddress: 52:54:00:2f:aa:bb
+  bootMACAddress: 52:54:00:eb:16:15
   bmc:
     # address: {{ ocp_ai_bmc_protocol|default('redfish+http') }}://{{ ocp_ai_bm_cidr_prefix }}.1:{{ ocp_ai_sushy_port | default('8082', true) }}/redfish/v1/Systems/{{ extra_worker_uuids.results[i].stdout }}
     # bmcAddress: "idrac-virtualmedia+https://[fd18:1152:1b7d:3::2]/redfish/v1/Systems/System.Embedded.1"
-    address: "redfish+http://10.19.96.218:8000/redfish/v1/Systems/3e09e434-d662-477c-a995-886c097bdd6e"
+    address: "redfish+http://10.19.96.218:8000/redfish/v1/Systems/e5c76f6f-39ff-4984-a478-e5b5c01cf87c"
     # address: "idrac-virtualmedia+https://10.19.96.215/redfish/v1/Systems/System.Embedded.1"
     # address: "redfish-virtualmedia://fakefish-10-19-96-215-fakefish.apps.ocp.example.com/redfish/v1/Systems/1"
     credentialsName: openstack-compute-bmc-secret

@@ -1,0 +1,23 @@
+---
+- name: Register Controller nodes
+  hosts: Controller
+  become: yes
+  vars:
+    repos:
+      - rhel-9-for-x86_64-baseos-eus-rpms
+      - rhel-9-for-x86_64-appstream-eus-rpms
+      - rhel-9-for-x86_64-highavailability-eus-rpms
+      - openstack-17.1-for-rhel-9-x86_64-rpms
+      - fast-datapath-for-rhel-9-x86_64-rpms
+      - rhceph-6-tools-for-rhel-9-x86_64-rpms
+  tasks:
+    - name: Register system 
+      redhat_subscription:
+        username: <USERNAME>
+        password: <PASSWORD>
+        release: 9.2
+    - name: Disable all repos 
+      command: "subscription-manager repos --disable *"
+    - name: Enable Controller node repos 
+      command: "subscription-manager repos --enable {{ item }}"
+      with_items: "{{ repos }}"
