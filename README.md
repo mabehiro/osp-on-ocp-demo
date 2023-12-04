@@ -274,7 +274,7 @@ $ ./14-custom-configmap.sh
 configmap/tripleo-tarball-config created
 ~~~
 
-#### Custmized environment files
+### Custmized environment files
 The custom environment files will be carried in the `heat-env-config ConfigMap`.
 We call the previous jinja template with `ComputeNetworkConfigTemplate`. Also, update `ContainerImageRegistryCredentials` accordingly. 
 
@@ -283,6 +283,160 @@ $ oc apply -f 11-heat-env-configmap.yaml
 configmap/heat-env-config created
 ~~~
 
+## Creating Ansible playbooks for overcloud 
+
+The `OpenStackConfigGenerator` will create the playbooks and it will push it to the git.
+
+~~~shell
+$ oc apply -f 15-openstack-config-generator.yaml 
+openstackconfiggenerator.osp-director.openstack.org/default created
+
+$ oc logs -f default-jrxnh -n openstack
+~~~
+
+Verify the git has been updated.
+
+![Alt text](images/git.png)
 
 
+## Deploy OpenStack
+Create `OpenStackDeploy` instance, OSPdO creates a job that runs the Ansible playbooks and deploy the overcloud.
 
+Retrieve the has/digest of the latest `OpenStackConfigVerion` form the following step. Update the `16-openstack-deployment.yaml` with the hash/digest.
+
+~~~shell
+$ oc get -n openstack --sort-by {.metadata.creationTimestamp} openstackconfigversion -o json
+~~~
+
+~~~shell
+$ oc create -f openstack-deployment.yaml -n openstack
+$ oc get pod
+NAME                                                              READY   STATUS      RESTARTS      AGE
+2105cf1dd383981c8e40f5545396e7cf74cc8c76f59f34c0ecb1bbc05bpv46g   0/1     Completed   0             11d
+deploy-openstack-default-6ntqv                                    1/1     Running     0             3m20s
+openstack-provision-server-c86449547-t9nb9                        2/2     Running     1 (48m ago)   53m
+openstackclient                                                   1/1     Running     0             39m
+osp-director-operator-controller-manager-78bfb8d494-4482b         2/2     Running     1 (11d ago)   11d
+osp-director-operator-index-6ncpr                                 1/1     Running     0             11d
+virt-launcher-controller-0-wmmcr                                  1/1     Running     0             39m
+virt-launcher-controller-1-qvdrp                                  1/1     Running     0             39m
+virt-launcher-controller-2-zlhqc                                  1/1     Running     0             39m
+$ oc logs -f deploy-openstack-default-6ntqv
+~~~
+
+Wait for the completion.
+
+~~~shell
+2023-12-03 01:33:24.330121 | 0a580a82-0174-d3c7-9776-00000000a067 |    SUMMARY | controller-0 | Wait for puppet host configuration to finish | 31.07s
+2023-12-03 01:33:24.330155 | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ End Summary Information ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sudo: unable to send audit message: Operation not permitted
+sudo: unable to send audit message: Operation not permitted
+sudo: unable to send audit message: Operation not permitted
+I1203 01:33:04.325231       1 deploy.go:237] Running process Overcloud JSON.
+I1203 01:33:04.504517       1 deploy.go:471] Shutting down deploy agent
+~~~
+
+## Accessing an overloud deployed with OSPdO
+
+Access the remote shell for openstackclient and run openstack commands.
+
+~~~shell
+$ oc rsh -n openstack openstackclient
+Defaulted container "openstackclient" out of: openstackclient, init-0 (init)
+sh-5.1$ cd /home/cloud-admin
+sh-5.1$ openstack network create default
++---------------------------+--------------------------------------+
+| Field                     | Value                                |
++---------------------------+--------------------------------------+
+| admin_state_up            | UP                                   |
+| availability_zone_hints   |                                      |
+| availability_zones        |                                      |
+| created_at                | 2023-12-02T00:13:09Z                 |
+| description               |                                      |
+| dns_domain                |                                      |
+| id                        | 3a43e5f5-709d-4cc9-8e80-00b8463ce0ca |
+| ipv4_address_scope        | None                                 |
+| ipv6_address_scope        | None                                 |
+| is_default                | False                                |
+| is_vlan_transparent       | None                                 |
+| mtu                       | 1442                                 |
+| name                      | default                              |
+| port_security_enabled     | True                                 |
+| project_id                | 512d85d47fff46b6af8709ecd9952512     |
+| provider:network_type     | geneve                               |
+| provider:physical_network | None                                 |
+| provider:segmentation_id  | 54119                                |
+| qos_policy_id             | None                                 |
+| revision_number           | 1                                    |
+| router:external           | Internal                             |
+| segments                  | None                                 |
+| shared                    | False                                |
+| status                    | ACTIVE                               |
+| subnets                   |                                      |
+| tags                      |                                      |
+| updated_at                | 2023-12-02T00:13:09Z                 |
++---------------------------+--------------------------------------+
+sh-5.1$ openstack endpoint list
++----------------------------------+-----------+--------------+----------------+---------+-----------+-----------------------------------------------+
+| ID                               | Region    | Service Name | Service Type   | Enabled | Interface | URL                                           |
++----------------------------------+-----------+--------------+----------------+---------+-----------+-----------------------------------------------+
+| 0582141acdd04637bd2501d2d2374a93 | regionOne | swift        | object-store   | True    | public    | http://10.0.0.10:8080/v1/AUTH_%(tenant_id)s   |
+| 0c482a1a94fb4db2a88ee04635ba519e | regionOne | neutron      | network        | True    | public    | http://10.0.0.10:9696                         |
+| 0f95a805ce5e433396ca9ef744aeaae7 | regionOne | heat         | orchestration  | True    | internal  | http://172.17.0.10:8004/v1/%(tenant_id)s      |
+| 17b14189acca4339bbd978e91f87d8b3 | regionOne | heat-cfn     | cloudformation | True    | public    | http://10.0.0.10:8000/v1                      |
+| 326ce42688c045b8b3a1c968ec1d2955 | regionOne | glance       | image          | True    | admin     | http://172.17.0.10:9293                       |
+| 3a78eeec625c4824bdf8262d873a7cd4 | regionOne | swift        | object-store   | True    | internal  | http://172.18.0.10:8080/v1/AUTH_%(tenant_id)s |
+| 4b112be67fe24559869205df8f2fd987 | regionOne | nova         | compute        | True    | admin     | http://172.17.0.10:8774/v2.1                  |
+| 4c84d17161e24ecbbb8eb9da44b2e3f0 | regionOne | glance       | image          | True    | internal  | http://172.17.0.10:9293                       |
+| 7b4034e664be4c37b439b577bd495a63 | regionOne | nova         | compute        | True    | internal  | http://172.17.0.10:8774/v2.1                  |
+| 7db0d6f619ba40e4b1e3811691e3e337 | regionOne | cinderv3     | volumev3       | True    | public    | http://10.0.0.10:8776/v3/%(tenant_id)s        |
+| 87eeba50f25447049721b3cf8ce28a9d | regionOne | swift        | object-store   | True    | admin     | http://172.18.0.10:8080                       |
+| 9032fc2b1f6b42b4b8656a4bae0fb996 | regionOne | keystone     | identity       | True    | internal  | http://172.17.0.10:5000                       |
+| a6413fe8ec004a208964f5320cd2b49b | regionOne | neutron      | network        | True    | admin     | http://172.17.0.10:9696                       |
+| ac4f60b4336444c18f2b6fdcee1e0594 | regionOne | placement    | placement      | True    | admin     | http://172.17.0.10:8778/placement             |
+| acef69a3f18643d7a41365daf34242d6 | regionOne | heat         | orchestration  | True    | admin     | http://172.17.0.10:8004/v1/%(tenant_id)s      |
+| b17e9ae7dd76435093ddd079d2e5d9c9 | regionOne | placement    | placement      | True    | public    | http://10.0.0.10:8778/placement               |
+| bb4023a50e2a4277a3f537e7942e4f3b | regionOne | keystone     | identity       | True    | public    | http://10.0.0.10:5000                         |
+| c29e687433a048f5b167803e1ce3d289 | regionOne | heat-cfn     | cloudformation | True    | internal  | http://172.17.0.10:8000/v1                    |
+| c35ee452fa0a4c56a717005a7a3e3542 | regionOne | nova         | compute        | True    | public    | http://10.0.0.10:8774/v2.1                    |
+| c50ac8afcdce4f499af03741f033f2f3 | regionOne | cinderv3     | volumev3       | True    | internal  | http://172.17.0.10:8776/v3/%(tenant_id)s      |
+| c75304d075774bb7a1adf5a42cfd4359 | regionOne | cinderv3     | volumev3       | True    | admin     | http://172.17.0.10:8776/v3/%(tenant_id)s      |
+| d4a2df19debe4864913e15b23f129d14 | regionOne | keystone     | identity       | True    | admin     | http://172.22.0.10:35357                      |
+| de91b3956fa242b6833e1776cfe47a6a | regionOne | neutron      | network        | True    | internal  | http://172.17.0.10:9696                       |
+| e0641023a27e403d8ed62370a4832724 | regionOne | glance       | image          | True    | public    | http://10.0.0.10:9292                         |
+| e53132d1d977402383c0de239b32b7ca | regionOne | placement    | placement      | True    | internal  | http://172.17.0.10:8778/placement             |
+| f764eadbe6fb4bf5a17594b2a5e105ea | regionOne | heat-cfn     | cloudformation | True    | admin     | http://172.17.0.10:8000/v1                    |
+| f7ad6e062b234262bd6d4745f31d324f | regionOne | heat         | orchestration  | True    | public    | http://10.0.0.10:8004/v1/%(tenant_id)s        |
++----------------------------------+-----------+--------------+----------------+---------+-----------+-----------------------------------------------+
+~~~
+
+Accessing to the horizon GUI. Get the `admin` password from `tripleo-passwords secret`.
+
+~~~shell
+$ oc get secret tripleo-passwords -o jsonpath='{.data.tripleo-overcloud-passwords\.yaml}' | base64 -d
+
+--- ommit
+parameter_defaults:
+  AdminPassword: lht4mbvzj6g6sflcltjpg7tl2
+  AdminToken: lklsnm2c995s7fnzmlvxz5h9f
+  AodhPassword: 84xm5jv9tdqdd6xxx8x4kqqfb
+  BarbicanPassword: h966z2r9v8v8cvsmvdb7zt4p2
+~~~
+
+Obtaing external address from `OpenStackNetConfig` CR.
+
+~~~shell
+    controlplane:
+      ipaddresses:
+        ctlplane: 172.22.0.10/24
+        external: 10.0.0.11/24
+        internal_api: 172.17.0.10/24
+        storage: 172.18.0.10/24
+        storage_mgmt: 172.19.0.10/24
+      ovnBridgeMacAdresses: {}
+~~~
+
+Now you should see the GUI.
+
+![Alt text](images/horizon1.png)
+![Alt text](images/horizon2.png)
