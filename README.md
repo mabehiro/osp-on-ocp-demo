@@ -60,7 +60,7 @@ NAME                                                      AGE
 osp-director-operator.openstack                           12d
 ~~~
 
-## CrCreating a Data Volume for the base Operating System
+## Creating a Data Volume for the base Operating System
 Follow Chapter 2.4, and you can use the provided script `02-uploadimg.sh`. After successfully completing this step, a `Persistent Volume Claim` (PVC) should be created.
 
 ![openstack-base-img pvc](./images/openstack-base-img.png)
