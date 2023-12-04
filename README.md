@@ -12,7 +12,7 @@ Here are some key points that I believe will help you prepare your environment:
 - The `provisioningNetwork` must be set to `Managed`, preventing the use of the SNO cluster.
 - The `provisioningNetwork` requires a dedicated network for `Baremetal` nodes. This network is separate from the OSP `control plane`.  
 - Dynamic provisioning is assumed in this tutorial, with ODF configured. Alternatively, [NFS](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/managing_file_systems/mounting-nfs-shares_managing-file-systems) can also be used.
-
+- HTTP server to hold image.
 
 ## Installing and Preparing the Director Operator
 
@@ -23,6 +23,8 @@ Follow the official [prerequistes](https://access.redhat.com/documentation/en-us
 - SR-IOV Operator.
 - Kubernetes NMState Operator. Be sure to create an NMState instance.
 - A remote Git repository for OSPdO to store the generated configuration.
+
+![tutorial setup](<images/Blank diagram-1.png>)
 
 
 ## Installing Director Operator
